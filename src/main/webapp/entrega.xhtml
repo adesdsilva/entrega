@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xml:lang="en"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<script type="text/javascript">
+		//<![CDATA[
+		function start() {
+			PF('statusDialog').show();
+		}
+
+		function stop() {
+			PF('statusDialog').hide();
+		}
+
+		//]]>
+	</script>
+	<title>Cadastro de Entrega</title>
+</h:head>
+<f:view>
+	<p:dialog modal="true" widgetVar="statusDialog" header="Status"
+		draggable="false" closable="false" resizable="false">
+		<p:graphicImage name="/images/ajaxloadingbar.gif" />
+	</p:dialog>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<h:body>
+		<h:form id="formEntregaNewNovo" prependId="false">
+			<p:toolbar>
+				<p:toolbarGroup>
+					<p:button type="button" value="Entregas Cadastradas"
+						icon="ui-icon-plus" outcome="lista-entregaNews" />
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Home" icon="ui-icon-home" outcome="index"
+						title="Pagina Inicial" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:separator />
+			<f:facet name="header">
+				<p:growl id="growl_entregaNew" showDetail="true" sticky="true" />
+				<p:messages id="msgEntregas" showDetail="true"> </p:messages>
+			</f:facet>
+			
+			<h:panelGrid columns="6" id="gridNew">
+				<h2>Remetente</h2>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:outputLabel value="Nome/Razao Social" for="entregaNew_nome_PF" />
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.remetente.nome}"
+					required="true" id="entregaNew_nome_PF"
+					requiredMessage="Faltou o nome do Rementente!" />
+				<p:message for="entregaNew_nome_PF"></p:message>
+				
+				<p:outputLabel value="CPF/CNPJ" for="entregaNew_cpf_PF"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.remetente.cpf}"
+					required="true" id="entregaNew_cpf_PF" 
+					requiredMessage="Faltou o nome do Remetente!" />
+				<p:message for="entregaNew_cpf_PF"></p:message>
+				
+				
+				<h4>Endereço Remetente</h4>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+			
+				<p:outputLabel value="CEP" for="entregaNew_cep_remet"/>
+				<p:inputMask value="#{entregaNewMB.novoEntregaNew.remetente.endereco.cep}"
+					required="true" id="entregaNew_cep_remet" label="Nome do produto"
+					mask="99999-999" requiredMessage="Faltou o CEP!">
+					<p:ajax event="blur" update="logradouro_entregaNewPJ_destino bairro_entregaNewPJ_destino cidade_entregaNewPJ_destino" />
+				</p:inputMask>
+				<p:message for="entregaNew_cep_remet"/>
+
+				<p:outputLabel value="Logradouro" for="logradouro_entregaNewPJ_destino"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.remetente.endereco.logradouro}"
+					required="true" id="logradouro_entregaNewPJ_destino" label="Nome do produto"
+					requiredMessage="Faltou o Logradouro!" />
+				<p:message for="logradouro_entregaNewPJ_destino"/>
+				
+				<p:outputLabel value="Numero" for="numero_entregaNewPJ_destino"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.remetente.endereco.numero}"
+					required="true" id="numero_entregaNewPJ_destino" label="Nome do produto"
+					requiredMessage="Faltou o numero!" />
+				<p:message for="logradouro_entregaNewPJ_destino"/>
+
+				<p:outputLabel value="Complemento"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.remetente.endereco.complemento}"/>
+				<p:spacer />
+
+				<p:outputLabel value="Bairro" for="bairro_entregaNewPJ_destino"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.remetente.endereco.bairro}"
+					required="true" id="bairro_entregaNewPJ_destino" label="Nome do produto"
+					requiredMessage="Faltou o Bairro!" />
+				<p:message for="bairro_entregaNewPJ_destino"/>
+
+				<p:outputLabel value="Cidade" for="cidade_entregaNewPJ_destino"/>
+				<p:inputText
+					value="#{entregaNewMB.novoEntregaNew.remetente.endereco.cidade}"
+					required="true" id="cidade_entregaNewPJ_destino" label="Nome do produto"
+					requiredMessage="Faltou a Cidade!" />
+				<p:message for="cidade_entregaNewPJ_destino"/>
+
+				<p:outputLabel value="UF" for="uf_entregaNewPJ_destino"/>
+				<p:inputMask id="uf_entregaNewPJ_destino"
+					value="#{entregaNewMB.novoEntregaNew.remetente.endereco.uf}"
+					mask="aa" required="true"
+					requiredMessage="Faltou a UF da residência">
+					<f:validateLength maximum="2" />
+				</p:inputMask>
+				<p:message for="uf_entregaNewPJ_destino"/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				
+				<h2>Destinatario</h2>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				
+				<p:outputLabel value="Nome/Razao Social" for="entregaNew_nome_PF_remet" />
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.destinatario.nome}"
+					required="true" id="entregaNew_nome_PF_remet"
+					requiredMessage="Faltou o nome do Rementente!" />
+				<p:message for="entregaNew_nome_PF_remet"></p:message>
+				
+				<p:outputLabel value="CPF/CNPJ" for="entregaNew_cpf_PF_remet"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.destinatario.cpf}"
+					required="true" id="entregaNew_cpf_PF_remet" 
+					requiredMessage="Faltou o nome do Remetente!" />
+				<p:message for="entregaNew_cpf_PF_remet"></p:message>
+				
+				<h4>Endereço Destinatario</h4>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				
+				<p:outputLabel value="CEP" for="entregaNew_cep_dest"/>
+				<p:inputMask value="#{entregaNewMB.novoEntregaNew.destinatario.endereco.cep}"
+					required="true" id="entregaNew_cep_dest"
+					mask="99999-999" requiredMessage="Faltou o CEP!">
+					<p:ajax event="blur" update="logradouro_entregaNewPJ_dest bairro_entregaNewPJ_dest cidade_entregaNewPJ_dest" />
+				</p:inputMask>
+				<p:message for="entregaNew_cep_dest"/>
+				
+				<p:outputLabel value="Logradouro" for="logradouro_entregaNewPJ_dest"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.destinatario.endereco.logradouro}"
+					required="true" id="logradouro_entregaNewPJ_dest"
+					requiredMessage="Faltou o Logradouro!" />
+				<p:message for="logradouro_entregaNewPJ_dest"/>
+				
+				<p:outputLabel value="Numero" for="numero_entregaNewPJ_dest"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.destinatario.endereco.numero}"
+					required="true" id="numero_entregaNewPJ_dest" />
+				<p:message for="logradouro_entregaNewPJ_dest"/>
+
+				<p:outputLabel value="Complemento"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.destinatario.endereco.complemento}"/>
+				<p:spacer />
+
+				<p:outputLabel value="Bairro" for="bairro_entregaNewPJ_dest"/>
+				<p:inputText value="#{entregaNewMB.novoEntregaNew.destinatario.endereco.bairro}"
+					required="true" id="bairro_entregaNewPJ_dest"
+					requiredMessage="Faltou o Bairro!" />
+				<p:message for="bairro_entregaNewPJ_dest"/>
+
+				<p:outputLabel value="Cidade" for="cidade_entregaNewPJ_dest"/>
+				<p:inputText
+					value="#{entregaNewMB.novoEntregaNew.destinatario.endereco.cidade}"
+					required="true" id="cidade_entregaNewPJ_dest"
+					requiredMessage="Faltou a Cidade!" />
+				<p:message for="cidade_entregaNewPJ_dest"/>
+
+				<p:outputLabel value="UF" for="uf_entregaNewPJ_dest"/>
+				<p:inputMask id="uf_entregaNewPJ_dest"
+					value="#{entregaNewMB.novoEntregaNew.destinatario.endereco.uf}"
+					mask="aa" required="true"
+					requiredMessage="Faltou a UF da residência">
+					<f:validateLength maximum="2" />
+				</p:inputMask>
+				<p:message for="uf_entregaNewPJ_dest"/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				
+				<h2>Produto</h2>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				
+				<p:outputLabel value="Selecionar Produto" />
+				<p:commandButton icon="ui-icon-search" title="Pesquisar"
+					onclick="PF('dial').show()" update="@none" type="button"
+					id="btnPac">
+				</p:commandButton>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				<p:spacer/>
+				
+				<p:outputLabel value="Nome" for="entregaNew_nomeProduto" />
+				<p:inputText readonly="true" required="true" disabled="true"
+					value="#{entregaNewMB.novoEntregaNew.produto.nome}"
+					id="entregaNew_nomeProduto" size="30" />
+				<p:spacer/>
+				<p:outputLabel value="Peso" for="entregaNew_pesoProduto" />
+				<p:inputText readonly="true" required="true" disabled="true"
+					value="#{entregaNewMB.novoEntregaNew.produto.peso}"
+					id="entregaNew_pesoProduto" size="30" />
+				<p:spacer/>
+				<p:outputLabel value="Volume" for="entregaNew_volumeProduto" />
+				<p:inputText readonly="true" required="true" disabled="true"
+					value="#{entregaNewMB.novoEntregaNew.produto.volume}"
+					id="entregaNew_volumeProduto" size="30" />
+				<p:spacer/>
+				<p:outputLabel value="Valor" for="entregaNew_valorProduto" />
+				<p:inputText readonly="true" required="true" disabled="true"
+					value="#{entregaNewMB.novoEntregaNew.produto.valor}"
+					id="entregaNew_valorProduto" size="30" />
+				<p:spacer/>
+			</h:panelGrid>
+
+			<p:dialog widgetVar="dial" header="Seleção Produto" modal="true"
+				resizable="false" draggable="false" closable="true">
+				<p:dataTable var="item" value="#{produtoMB.findAll()}"
+					emptyMessage="Nenhum produto encontrado." rows="10"
+					selectionMode="single" selection="#{produtoMB.produto}"
+					rowKey="#{item.idProduto}" paginator="true"
+					paginatorPosition="bottom">
+
+					<p:column headerText="Id" style="width: 6%;" resizable="true"
+						sortBy="#{item.idProduto}" filterMatchMode="contains"
+						filterBy="#{item.idProduto}">
+						<h:outputText id="outputId" value="#{item.idProduto}" />
+					</p:column>
+					<p:column headerText="Nome" sortBy="#{item.nome}"
+						filterMatchMode="contains" filterBy="#{item.nome}">
+						<h:outputText id="outputNome" value="#{item.nome}" />
+					</p:column>
+					<p:column headerText="Peso" sortBy="#{item.peso}"
+						filterMatchMode="contains" filterBy="#{item.peso}">
+						<h:outputText id="outputPeso" value="#{item.peso}" />
+					</p:column>
+					<p:column headerText="Volume" sortBy="#{item.volume}"
+						filterBy="#{item.volume}">
+						<h:outputText value="#{item.volume}" />
+					</p:column>
+					<p:column headerText="Valor" sortBy="#{item.valor}"
+						filterBy="#{item.valor}">
+						<h:outputText value="#{item.valor}" />
+					</p:column>
+					<p:column headerText="Selecionar">
+						<p:commandButton icon="ui-icon-check" title="Selecionar"
+							action="#{entregaNewMB.setarCamposProduto(item)}"
+							oncomplete="PF('dial').hide();" immediate="true" update="@all">
+							<f:setPropertyActionListener
+								target="#{entregaNewMB.novoEntregaNew.produto}" value="#{item}" />
+						</p:commandButton>
+
+					</p:column>
+				</p:dataTable>
+			</p:dialog>
+			<p:separator />
+			<p:commandButton value="Salvar" icon="ui-icon-disk"
+				update="formEntregaNewNovo growl_entregaNew"
+				action="#{entregaNewMB.inserir(entregaNewMB.novoEntregaNew)}" process="@all">
+				<p:confirm header="Confirmation" icon="ui-icon-check"
+					message="Deseja realmente Cadastrar?" />
+			</p:commandButton>
+
+
+			<p:confirmDialog global="true" showEffect="fade" width="300">
+				<div style="text-align: center; width: 100%; padding-left: 4px;">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check">
+					</p:commandButton>
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+	</h:body>
+</f:view>
+</html>

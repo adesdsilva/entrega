@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xml:lang="en"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<script type="text/javascript">
+		//<![CDATA[
+		function start() {
+			PF('statusDialog').show();
+		}
+
+		function stop() {
+			PF('statusDialog').hide();
+		}
+
+		//]]>
+	</script>
+	<title>Lista de Produtos</title>
+</h:head>
+<f:view>
+	<p:dialog modal="true" widgetVar="statusDialog" header="Status"
+		draggable="false" closable="false" resizable="false">
+		<p:graphicImage name="/images/ajaxloadingbar.gif" />
+	</p:dialog>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<h:body>
+		<h:form id="formProdutos">
+			<p:messages closable="true" showDetail="true"></p:messages>
+			<p:growl id="mensagens" showDetail="true" autoUpdate="true"
+				closable="true">
+				<p:autoUpdate />
+			</p:growl>
+			<p:toolbar>
+				<p:toolbarGroup>
+					<p:commandButton type="button" value="Novo Produto" actionListener="#{produtoMB.openNew}"
+						icon="ui-icon-plus" onclick="location.href='cadastro-produto.xhtml'">
+					</p:commandButton>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Home" icon="ui-icon-home" outcome="index"
+						title="Pagina Inicial" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:separator />
+			<p:dataTable id="tabelaProduto" var="item" reflow="true"
+				value="#{produtoMB.findAll()}" prependId="false" paginator="true"
+				rows="25" emptyMessage="Não há produtos cadastrados."
+				rowKey="#{item.idProduto}" selectionMode="single"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
+                         {RowsPerPageDropdown} {Exporters}"
+				selection="#{produtoMB.produto}"
+				rowsPerPageTemplate="10,15,25,50,100">
+				<f:facet name="{Exporters}">
+					<h:commandLink id="exportExcel">
+						<p:graphicImage name="/images/excel.png" width="24" />
+						<p:dataExporter type="xls" target="tabelaProduto"
+							fileName="listaProdutos" />
+					</h:commandLink>
+					<h:commandLink id="exportPDF">
+						<p:graphicImage name="/images/pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="tabelaProduto"
+							fileName="listaProdutos" />
+					</h:commandLink>
+					<h:commandLink id="exportCSV">
+						<p:graphicImage name="/images/csv.png" width="24" />
+						<p:dataExporter type="csv" target="tabelaProduto"
+							fileName="listaProdutos" />
+					</h:commandLink>
+					<h:commandLink id="exportXML">
+						<p:graphicImage name="/images/xml.png" width="24" />
+						<p:dataExporter type="xml" target="tabelaProduto"
+							fileName="listaProdutos" />
+					</h:commandLink>
+				</f:facet>
+
+				<f:facet name="header">
+					<p:outputLabel value="Lista de Produtos Cadastrados" />
+				</f:facet>
+				<p:column headerText="Id" style="width: 6%;" resizable="true" 
+					sortBy="#{item.idProduto}" filterMatchMode="contains"
+					filterBy="#{item.idProduto}">
+					<h:outputText id="outputId" value="#{item.idProduto}" />
+				</p:column>
+				<p:column headerText="Nome" style="width: 6%;" sortBy="#{item.nome}"
+					filterMatchMode="contains" filterBy="#{item.nome}">
+					<h:outputText id="outputNome" value="#{item.nome}" />
+				</p:column>
+				<p:column headerText="Peso" style="width: 25%;"
+					sortBy="#{item.peso}" filterMatchMode="contains"
+					filterBy="#{item.peso}">
+					<h:outputText id="outputPeso" value="#{item.peso}" />
+				</p:column>
+				<p:column headerText="Volume" style="width: 10%;"
+					sortBy="#{item.volume}" filterBy="#{item.volume}">
+					<h:outputText value="#{item.volume}" />
+				</p:column>
+				<p:column headerText="Valor" style="width: 10%;"
+					sortBy="#{item.valor}" filterBy="#{item.valor}">
+					<h:outputText value="#{item.valor}" />
+				</p:column>
+
+				<p:column style="width:10%;text-align: center" headerText="Açoes"
+					exportable="false">
+					<p:commandButton update=":formProdutos:produtoDetail"
+						oncomplete="PF('itemDialog').show()" icon="ui-icon-search"
+						title="Detalhe">
+						<f:setPropertyActionListener value="#{item}"
+							target="#{produtoMB.produto}" />
+					</p:commandButton>
+					<p:spacer />
+					<p:commandButton icon="ui-icon-pencil" onclick="location.href='editar-produto.xhtml'"
+						title="Atualizar">
+						<f:setPropertyActionListener value="#{item}"
+							target="#{produtoMB.produto}" />
+						<p:confirm header="Confirmation" icon="ui-icon-pencil"
+							message="Deseja realmente editar?" />
+					</p:commandButton>
+					<p:spacer/>
+					<p:commandButton update=":formProdutos:tabelaProduto"
+						icon="ui-icon-trash"
+						action="#{produtoMB.delete(produtoMB.produto.idProduto)}"
+						title="Deletar">
+						<f:setPropertyActionListener value="#{item}"
+							target="#{produtoMB.produto}" />
+						<p:confirm header="Confirmation" icon="ui-icon-trash"
+							message="Deseja realmente deletar?" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:dialog header="Detalhes do Produto" widgetVar="itemDialog"
+				responsive="true" modal="true" showEffect="fade" hideEffect="fade"
+				resizable="false">
+				<p:outputPanel id="produtoDetail" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty produtoMB.produto}"
+						columnClasses="label,value">
+						<f:facet name="header">
+							<h:outputLabel>Produto</h:outputLabel>
+						</f:facet>
+
+						<h:outputText value="Id" />
+						<h:inputText value="#{produtoMB.produto.idProduto}"
+							disabled="#{true}" />
+
+						<h:outputText value="Nome" />
+						<h:inputText value="#{produtoMB.produto.nome}" disabled="#{true}" />
+
+						<h:outputText value="Peso" />
+						<h:inputText value="#{produtoMB.produto.peso}" disabled="true" />
+
+						<h:outputText value="Volume" />
+						<h:inputText value="#{produtoMB.produto.volume}" disabled="true" />
+
+						<h:outputText value="Valor R$" />
+						<h:inputText value="#{produtoMB.produto.valor}" disabled="true" />
+
+					</p:panelGrid>
+					<p:panelGrid columns="2" columnClasses="label,value">
+						<p:button id="btnFechar" value="Fechar" icon="ui-icon-plusthick" />
+					</p:panelGrid>
+				</p:outputPanel>
+			</p:dialog>
+
+			<p:confirmDialog global="true" showEffect="fade" width="300">
+				<div style="text-align: center; width: 100%; padding-left: 4px;">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check">
+					</p:commandButton>
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+	</h:body>
+</f:view>
+</html>

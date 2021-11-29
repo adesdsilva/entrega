@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xml:lang="en"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<script type="text/javascript">
+		//<![CDATA[
+		function start() {
+			PF('statusDialog').show();
+		}
+
+		function stop() {
+			PF('statusDialog').hide();
+		}
+
+		//]]>
+	</script>
+	<title>Lista de Entregas</title>
+</h:head>
+<f:view>
+	<p:dialog modal="true" widgetVar="statusDialog" header="Status"
+		draggable="false" closable="false" resizable="false">
+		<p:graphicImage name="/images/ajaxloadingbar.gif" />
+	</p:dialog>
+	<p:ajaxStatus onstart="PF('statusDialog').show()"
+		onsuccess="PF('statusDialog').hide()" />
+	<h:body>
+		<h:form id="formEntregasNew">
+			<p:messages closable="true" showDetail="true"></p:messages>
+			<p:growl id="msgsEntregasNews" showDetail="true" autoUpdate="true"
+				closable="true">
+				<p:autoUpdate />
+			</p:growl>
+			<p:toolbar>
+				<p:toolbarGroup>
+					<p:commandButton type="button" value="Nova Entrega"
+						actionListener="#{entregaNewMB.openNew}" icon="ui-icon-plus"
+						onclick="location.href='entrega.xhtml'">
+					</p:commandButton>
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:button value="Home" icon="ui-icon-home" outcome="index"
+						title="Pagina Inicial" />
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:separator />
+			<p:dataTable id="tabelaEntregaNew" var="item" reflow="true"
+				value="#{entregaNewMB.findAll()}" prependId="false" paginator="true"
+				rows="25" emptyMessage="Não há entregas cadastrados."
+				rowKey="#{item.id}" selectionMode="single" editable="true"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}
+                         {RowsPerPageDropdown} {Exporters}"
+				selection="#{entregaNewMB.entregaNew}"
+				rowsPerPageTemplate="10,15,25,50,100">
+				<f:facet name="{Exporters}">
+					<h:commandLink id="exportExcel">
+						<p:graphicImage name="/images/excel.png" width="24" />
+						<p:dataExporter type="xls" target="tabelaEntregaNew"
+							fileName="listaEntregas" />
+					</h:commandLink>
+					<h:commandLink id="exportPDF">
+						<p:graphicImage name="/images/pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="tabelaEntregaNew"
+							fileName="listaEntregas" />
+					</h:commandLink>
+					<h:commandLink id="exportCSV">
+						<p:graphicImage name="/images/csv.png" width="24" />
+						<p:dataExporter type="csv" target="tabelaEntregaNew"
+							fileName="listaEntregas" />
+					</h:commandLink>
+					<h:commandLink id="exportXML">
+						<p:graphicImage name="/images/xml.png" width="24" />
+						<p:dataExporter type="xml" target="tabelaEntregaNew"
+							fileName="listaEntregas" />
+					</h:commandLink>
+				</f:facet>
+
+				<f:facet name="header">
+					<p:outputLabel value="Lista de Entregas Cadastradas" />
+				</f:facet>
+				<p:column headerText="Id" style="width: 6%;" resizable="true"
+					sortBy="#{item.id}" filterMatchMode="contains"
+					filterBy="#{item.id}">
+					<h:outputText id="outputId" value="#{item.id}" />
+				</p:column>
+				<p:column headerText="Remetente" style="width: 6%;"
+					sortBy="#{item.remetente.nome}" filterMatchMode="contains"
+					filterBy="#{item.remetente.nome}">
+					<h:outputText id="outputNome" value="#{item.remetente.nome}" />
+				</p:column>
+				<p:column headerText="CPF/CNPJ Remet." style="width: 25%;"
+					sortBy="#{item.remetente.cpf}" filterMatchMode="contains"
+					filterBy="#{item.remetente.cpf}">
+					<h:outputText id="outputPeso" value="#{item.remetente.cpf}" />
+				</p:column>
+				<p:column headerText="Produto" style="width: 10%;"
+					sortBy="#{item.produto.nome}" filterBy="#{item.produto.nome}">
+					<h:outputText value="#{item.produto.nome}" />
+				</p:column>
+				<p:column headerText="Destinatario" style="width: 10%;"
+					sortBy="#{item.valor}" filterBy="#{item.destinatario.nome}">
+					<h:outputText value="#{item.destinatario.nome}" />
+				</p:column>
+				<p:column headerText="CPF/CNPJ Dest." style="width: 10%;"
+					sortBy="#{item.valor}" filterBy="#{item.destinatario.nome}">
+					<h:outputText value="#{item.destinatario.cpf}" />
+				</p:column>
+				<p:column headerText="Status" style="width: 10%;">
+					<h:outputText value="#{item.isEntrega}" />
+
+				</p:column>
+
+				<p:column style="width:10%;text-align: center" headerText="Açoes"
+					exportable="false">
+					<p:commandButton update=":formEntregasNew:entregaNewDetail"
+						oncomplete="PF('itemDial').show()" icon="ui-icon-search"
+						title="Detalhes">
+						<f:setPropertyActionListener value="#{item}"
+							target="#{entregaNewMB.entregaNew}" />
+					</p:commandButton>
+					<p:spacer />
+					<p:commandButton icon="ui-icon-pencil" title="Atualizar"
+						onclick="location.href='editar-entrega.xhtml'">
+						<f:setPropertyActionListener value="#{item}"
+							target="#{entregaNewMB.entregaNew}" />
+						<p:confirm header="Confirmation" icon="ui-icon-pencil"
+							message="Deseja realmente editar?" />
+					</p:commandButton>
+					<p:spacer />
+					<p:commandButton update=":formEntregasNew:tabelaEntregaNew"
+						icon="ui-icon-trash"
+						action="#{entregaNewMB.delete(entregaNewMB.entregaNew.id)}"
+						title="Deletar">
+						<f:setPropertyActionListener value="#{item}"
+							target="#{entregaNewMB.entregaNew}" />
+						<p:confirm header="Confirmation" icon="ui-icon-trash"
+							message="Deseja realmente deletar?" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:dialog header="Detalhes da Entrega" widgetVar="itemDial"
+				responsive="true" modal="true" showEffect="fade" hideEffect="fade"
+				resizable="false">
+
+				<p:outputPanel id="entregaNewDetail" style="text-align:center;">
+					<p:panelGrid columns="2"
+						rendered="#{not empty entregaNewMB.entregaNew}"
+						columnClasses="label,value">
+						<f:facet name="header">
+							<h:outputLabel>Entrega</h:outputLabel>
+						</f:facet>
+
+						<h:outputText value="Id" />
+						<h:inputText value="#{entregaNewMB.entregaNew.id}"
+							disabled="#{true}" />
+
+						<h:outputText value="CEP Remetente" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.remetente.endereco.cep}"
+							disabled="true" />
+
+						<h:outputText value="Logradouro Remetente" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.remetente.endereco.logradouro}"
+							disabled="true" />
+
+						<h:outputText value="Nº Remetente" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.remetente.endereco.numero}"
+							disabled="true" />
+
+						<h:outputText value="Complem. Remetente" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.remetente.endereco.complemento}"
+							disabled="true" />
+
+						<h:outputText value="Bairro Remetente" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.remetente.endereco.bairro}"
+							disabled="true" />
+
+						<h:outputText value="Cidade Remetente" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.remetente.endereco.cidade}"
+							disabled="true" />
+
+						<h:outputText value="UF Remetente" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.remetente.endereco.uf}"
+							disabled="true" />
+
+						<h:outputText value="CEP Destinatario" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.destinatario.endereco.cep}"
+							disabled="true" />
+
+						<h:outputText value="Logradouro Destinatario" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.destinatario.endereco.logradouro}"
+							disabled="true" />
+
+						<h:outputText value="Nº Destinatario" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.destinatario.endereco.numero}"
+							disabled="true" />
+
+						<h:outputText value="Complemento Destinatario" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.destinatario.endereco.complemento}"
+							disabled="true" />
+
+						<h:outputText value="Bairro Destinatario" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.destinatario.endereco.bairro}"
+							disabled="true" />
+
+						<h:outputText value="Cidade Destinatario" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.destinatario.endereco.cidade}"
+							disabled="true" />
+
+						<h:outputText value="UF Destinatario" />
+						<h:inputText
+							value="#{entregaNewMB.entregaNew.destinatario.endereco.uf}"
+							disabled="true" />
+
+					</p:panelGrid>
+					<p:panelGrid columns="2" columnClasses="label,value">
+						<p:button id="btnFechar" value="Fechar" icon="ui-icon-plusthick" />
+					</p:panelGrid>
+				</p:outputPanel>
+			</p:dialog>
+
+			<p:confirmDialog global="true" showEffect="fade" width="300">
+				<div style="text-align: center; width: 100%; padding-left: 4px;">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check">
+					</p:commandButton>
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+	</h:body>
+</f:view>
+</html>
